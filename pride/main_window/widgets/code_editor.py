@@ -11,7 +11,7 @@ class CodeEdit(QtWidgets.QPlainTextEdit):
         return QtWidgets.QPlainTextEdit.keyPressEvent(self, e)
 
 
-class LineNumberBar(QtWidgets.QWidget):
+class LinesNumberBar(QtWidgets.QWidget):
     def __init__(self, code_editor, parent=None):
         QtWidgets.QWidget.__init__(self, parent)
         self.editor = code_editor
@@ -72,7 +72,7 @@ class CodeEditorWidget(QtWidgets.QWidget):
         QtWidgets.QWidget.__init__(self)
 
         self._code_editor = CodeEdit(self)
-        self._line_number_bar = LineNumberBar(self._code_editor, self)
+        self._line_number_bar = LinesNumberBar(self._code_editor, self)
 
         horizontal_layout = QtWidgets.QHBoxLayout()
         horizontal_layout.setSpacing(1.5)
