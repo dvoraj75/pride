@@ -30,6 +30,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionOpen.triggered.connect(self.open_file)
         self.actionSave.triggered.connect(self.save_file)
         self.actionSave_as.triggered.connect(self.save_file_as)
+        self.actionExit.triggered.connect(self.exit_application)
 
     #  TODO: co nejak modul pro vsechny funkce menu? Je nutne to mit v main window?
     #  TODO: kvuli tomu, ze zde volam save_file_as se ve file dialogu zobrazuje Save file - upravit
@@ -74,3 +75,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not file_path:
             return
         self.save_file(file_path)
+
+    def exit_application(self):
+        #  TODO: soubor neni ulozen !!
+        self.close()

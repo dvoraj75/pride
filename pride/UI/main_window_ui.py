@@ -105,16 +105,23 @@ class Ui_MainWindow(object):
         self.menuRun.setTitle(_translate("MainWindow", "Run"))
         self.menuHelp.setTitle(_translate("MainWindow", "Help"))
         self.actionNew.setText(_translate("MainWindow", "New..."))
+        self.actionNew.setShortcut(_translate("MainWindow", "Ctrl+N"))
         self.actionOpen.setText(_translate("MainWindow", "Open..."))
+        self.actionOpen.setShortcut(_translate("MainWindow", "Ctrl+O"))
         self.actionSave_as.setText(_translate("MainWindow", "Save as..."))
+        self.actionSave_as.setShortcut(_translate("MainWindow", "Ctrl+Shift+S"))
         self.actionExit.setText(_translate("MainWindow", "Exit"))
+        self.actionExit.setShortcut(_translate("MainWindow", "Ctrl+Q"))
         self.actionUndo.setText(_translate("MainWindow", "Undo"))
+        self.actionUndo.setShortcut(_translate("MainWindow", "Ctrl+Z"))
         self.actionRedo.setText(_translate("MainWindow", "Redo"))
+        self.actionRedo.setShortcut(_translate("MainWindow", "Ctrl+Shift+Z"))
         self.actionRun.setText(_translate("MainWindow", "Run"))
         self.actionDebug.setText(_translate("MainWindow", "Debug"))
         self.actionHelp.setText(_translate("MainWindow", "Help"))
         self.actionAbout.setText(_translate("MainWindow", "About"))
         self.actionSave.setText(_translate("MainWindow", "Save"))
+        self.actionSave.setShortcut(_translate("MainWindow", "Ctrl+S"))
 
 
 if __name__ == "__main__":
