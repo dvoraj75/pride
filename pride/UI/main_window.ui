@@ -17,7 +17,7 @@
    <bool>false</bool>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QWidget" name="horizontalLayoutWidget">
+   <widget class="QWidget" name="verticalLayoutWidget">
     <property name="geometry">
      <rect>
       <x>9</x>
@@ -26,7 +26,11 @@
       <height>541</height>
      </rect>
     </property>
-    <layout class="QHBoxLayout" name="horizontal_layout"/>
+    <layout class="QVBoxLayout" name="vertical_layout">
+     <item>
+      <layout class="QHBoxLayout" name="horizontal_layout"/>
+     </item>
+    </layout>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">

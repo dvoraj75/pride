@@ -68,8 +68,8 @@ class LinesNumberBar(QtWidgets.QWidget):
 
 
 class CodeEditorWidget(QtWidgets.QWidget):
-    def __init__(self):
-        QtWidgets.QWidget.__init__(self)
+    def __init__(self, parent=None):
+        QtWidgets.QWidget.__init__(self, parent)
 
         self._code_editor = CodeEdit(self)
         self._line_number_bar = LinesNumberBar(self._code_editor, self)
