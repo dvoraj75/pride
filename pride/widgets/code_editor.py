@@ -86,3 +86,7 @@ class CodeEditorWidget(QWidget):
         self._code_editor.clear()
         for line in file:
             self._code_editor.insertPlainText(line)
+
+    def get_plain_text(self):
+        return self._code_editor.toPlainText()
+
