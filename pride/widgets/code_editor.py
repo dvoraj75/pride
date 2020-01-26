@@ -82,10 +82,22 @@ class CodeEditorWidget(QWidget):
 
         self.setLayout(horizontal_layout)
 
+        self.__opened_file = None
+
+    @property
+    def opened_file(self):
+        return self.__opened_file
+
+    @opened_file.setter
+    def opened_file(self, file_name):
+        self.__opened_file = file_name
+
     def load_file(self, file):
         self._code_editor.clear()
         for line in file:
             self._code_editor.insertPlainText(line)
+
+        self.__opened_file = file.name
 
     def get_plain_text(self):
         return self._code_editor.toPlainText()
