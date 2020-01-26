@@ -2,7 +2,7 @@ import sys
 
 from PyQt5.QtWidgets import QApplication
 
-from pride.main_window import MainWindow
+from pride.widgets import MainWindow
 
 
 if __name__ == "__main__":

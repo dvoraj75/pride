@@ -2,6 +2,8 @@ import sys
 
 from PyQt5 import QtGui, QtCore, QtWidgets
 
+# TODO: predelat importy
+
 
 class CodeEdit(QtWidgets.QPlainTextEdit):
     def keyPressEvent(self, e: QtGui.QKeyEvent) -> None:
@@ -80,3 +82,8 @@ class CodeEditorWidget(QtWidgets.QWidget):
         horizontal_layout.addWidget(self._code_editor)
 
         self.setLayout(horizontal_layout)
+
+    def load_file(self, file):
+        self._code_editor.clear()
+        for line in file:
+            self._code_editor.insertPlainText(line)
