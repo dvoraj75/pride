@@ -1,21 +1,20 @@
-import sys
 
-from PyQt5 import QtGui, QtCore, QtWidgets
+from PyQt5.QtCore import Qt, QRect
+from PyQt5.QtGui import QKeyEvent, QPaintEvent, QPainter, QColor
+from PyQt5.QtWidgets import QPlainTextEdit, QWidget, QHBoxLayout
 
-# TODO: predelat importy
 
-
-class CodeEdit(QtWidgets.QPlainTextEdit):
-    def keyPressEvent(self, e: QtGui.QKeyEvent) -> None:
-        if e.key() == QtCore.Qt.Key_Tab:
+class CodeEdit(QPlainTextEdit):
+    def keyPressEvent(self, event: QKeyEvent) -> None:
+        if event.key() == Qt.Key_Tab:
             self.textCursor().insertText("    ")
             return
-        return QtWidgets.QPlainTextEdit.keyPressEvent(self, e)
+        return QPlainTextEdit.keyPressEvent(self, event)
 
 
-class LinesNumberBar(QtWidgets.QWidget):
+class LinesNumberBar(QWidget):
     def __init__(self, code_editor, parent=None):
-        QtWidgets.QWidget.__init__(self, parent)
+        QWidget.__init__(self, parent)
         self.editor = code_editor
 
         self.editor.updateRequest.connect(self.update)
@@ -25,7 +24,7 @@ class LinesNumberBar(QtWidgets.QWidget):
 
     def update(self) -> None:
         if self.isVisible():
-            QtWidgets.QWidget.update(self)
+            QWidget.update(self)
 
     def update_width(self, line_number: int) -> None:
         """
@@ -35,14 +34,14 @@ class LinesNumberBar(QtWidgets.QWidget):
         if self.width() != new_width:
             self.setFixedWidth(new_width)
 
-    def paintEvent(self, event: QtGui.QPaintEvent) -> None:
+    def paintEvent(self, event: QPaintEvent) -> None:
         if self.isVisible():
             block = self.editor.firstVisibleBlock()  # first visible block of editor
             line_number = block.blockNumber()  + 1# line of first visible block
             font_height = self.fontMetrics().height()  # height of used font for line numbers
 
-            painter = QtGui.QPainter(self)  # painter which will draw bar and numbers
-            painter.fillRect(event.rect(), QtGui.QColor("#d3d7cf"))  # fill the line number bar with some color TODO: configurable
+            painter = QPainter(self)  # painter which will draw bar and numbers
+            painter.fillRect(event.rect(), QColor("#d3d7cf"))  # fill the line number bar with some color TODO: configurable
             painter.drawRect(0, 0, event.rect().width() - 1, event.rect().height() - 1)  # draw line number bar border
             font = painter.font()  # actual font
 
@@ -54,11 +53,11 @@ class LinesNumberBar(QtWidgets.QWidget):
                 offset = self.editor.contentOffset()
                 block_top = block_geometry.translated(offset).top()
 
-                number_rect = QtCore.QRect(5, block_top, self.width() - 5, font_height)  # rectangle for the line number
+                number_rect = QRect(5, block_top, self.width() - 5, font_height)  # rectangle for the line number
                 font.setBold(line_number == current_block)  # set bold line number for actual line
 
                 painter.setFont(font)
-                painter.drawText(number_rect, QtCore.Qt.AlignLeft, str(line_number))
+                painter.drawText(number_rect, Qt.AlignLeft, str(line_number))
 
                 line_number += 1
 
@@ -69,14 +68,14 @@ class LinesNumberBar(QtWidgets.QWidget):
             painter.end()
 
 
-class CodeEditorWidget(QtWidgets.QWidget):
+class CodeEditorWidget(QWidget):
     def __init__(self, parent=None):
-        QtWidgets.QWidget.__init__(self, parent)
+        QWidget.__init__(self, parent)
 
         self._code_editor = CodeEdit(self)
         self._line_number_bar = LinesNumberBar(self._code_editor, self)
 
-        horizontal_layout = QtWidgets.QHBoxLayout()
+        horizontal_layout = QHBoxLayout()
         horizontal_layout.setSpacing(1.5)
         horizontal_layout.addWidget(self._line_number_bar)
         horizontal_layout.addWidget(self._code_editor)
