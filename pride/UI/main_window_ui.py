@@ -74,8 +74,13 @@ class Ui_MainWindow(object):
         self.actionHelp.setObjectName("actionHelp")
         self.actionAbout = QtWidgets.QAction(MainWindow)
         self.actionAbout.setObjectName("actionAbout")
+        self.actionSave = QtWidgets.QAction(MainWindow)
+        icon = QtGui.QIcon.fromTheme("document-save")
+        self.actionSave.setIcon(icon)
+        self.actionSave.setObjectName("actionSave")
         self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionOpen)
+        self.menuFile.addAction(self.actionSave)
         self.menuFile.addAction(self.actionSave_as)
         self.menuFile.addAction(self.actionExit)
         self.menuEdit.addAction(self.actionUndo)
@@ -109,6 +114,7 @@ class Ui_MainWindow(object):
         self.actionDebug.setText(_translate("MainWindow", "Debug"))
         self.actionHelp.setText(_translate("MainWindow", "Help"))
         self.actionAbout.setText(_translate("MainWindow", "About"))
+        self.actionSave.setText(_translate("MainWindow", "Save"))
 
 
 if __name__ == "__main__":
