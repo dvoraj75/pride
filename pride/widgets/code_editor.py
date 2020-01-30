@@ -1,7 +1,8 @@
+import os
 
 from PyQt5.QtCore import Qt, QRect
-from PyQt5.QtGui import QKeyEvent, QPaintEvent, QPainter, QColor
-from PyQt5.QtWidgets import QPlainTextEdit, QWidget, QHBoxLayout
+from PyQt5.QtGui import QKeyEvent, QPaintEvent, QPainter, QColor, QMouseEvent
+from PyQt5.QtWidgets import QPlainTextEdit, QWidget, QHBoxLayout, QVBoxLayout, QTabWidget, QTabBar
 
 
 class CodeEdit(QPlainTextEdit):
@@ -82,23 +83,52 @@ class CodeEditorWidget(QWidget):
 
         self.setLayout(horizontal_layout)
 
-        self.__opened_file = None
-
-    @property
-    def opened_file(self):
-        return self.__opened_file
-
-    @opened_file.setter
-    def opened_file(self, file_name):
-        self.__opened_file = file_name
+        self.file_saved = True
 
     def load_file(self, file):
         self._code_editor.clear()
         for line in file:
             self._code_editor.insertPlainText(line)
 
-        self.__opened_file = file.name
-
     def get_plain_text(self):
         return self._code_editor.toPlainText()
 
+    def is_modified(self):
+        return self._code_editor.document().isModified()
+
+
+class TabBar(QTabBar):
+    def mouseReleaseEvent(self, event: QMouseEvent) -> None:
+        if event.button() == Qt.MidButton:
+            self.tabCloseRequested.emit(self.tabAt(event.pos()))
+
+
+class CodeEditorTabWidget(QWidget):
+    def __init__(self, parent=None):
+        QWidget.__init__(self, parent)
+
+        vertical_layout = QVBoxLayout()
+        self.tab_widget = QTabWidget()
+        self.tab_widget.setTabBar(TabBar())
+        self.tab_widget.setTabsClosable(True)
+        self.tab_widget.setUsesScrollButtons(True)
+        self.tab_widget.setMovable(True)
+        self.tab_widget.tabCloseRequested.connect(self.close_tab)
+
+        vertical_layout.addWidget(self.tab_widget)
+        self.setLayout(vertical_layout)
+
+    def open_file(self, file_path: str):
+        with open(file_path, 'r') as f:
+            code_editor = CodeEditorWidget(self)
+            code_editor.load_file(f)
+            code_editor.file_saved = True
+            self.add_tab(code_editor, f.name)
+
+    def add_tab(self, code_editor: CodeEditorWidget, file_name: str):
+        new_index = self.tab_widget.count()
+        self.tab_widget.addTab(code_editor, os.path.basename(file_name))
+        self.tab_widget.setCurrentIndex(new_index)
+
+    def close_tab(self, index):
+        self.tab_widget.removeTab(index)
