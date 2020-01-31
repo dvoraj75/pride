@@ -27,30 +27,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.trigger_menu_actions()
 
     def trigger_menu_actions(self):
-        # self.actionNew.triggered.connect(self.new_file)
+        self.actionNew.triggered.connect(self.new_file)
         self.actionOpen.triggered.connect(self.open_file)
-        # self.actionSave.triggered.connect(self.save_file)
-        # self.actionSave_as.triggered.connect(self.save_file_as)
-        # self.actionExit.triggered.connect(self.exit_application)
+        self.actionSave.triggered.connect(self.save_file)
+        self.actionSave_as.triggered.connect(self.save_file_as)
+        self.actionExit.triggered.connect(self.exit_application)
 
-    # #  TODO: co nejak modul pro vsechny funkce menu? Je nutne to mit v main window?
-    # #  TODO: kvuli tomu, ze zde volam save_file_as se ve file dialogu zobrazuje Save file - upravit
-    # def new_file(self):
-    #     file_path, _ = QFileDialog.getSaveFileName(self, "New file", ".", FILE_TYPES_SEPARATOR.join((PYTHON_FILES, ALL_FILES)))
-    #
-    #     if not file_path:
-    #         return
-    #
-    #     try:
-    #         with open(file_path, 'w') as f:
-    #             f.write("")
-    #     except PermissionError:
-    #         ErrorDialog("Permission error", "Can't create this file: permission denied", self).show()
-    #     except Exception:
-    #         ErrorDialog("Unknown error", "Can't create this file: unknown error", self).show()
-    #
-    #     self.code_editor.opened_file = file_path
-    # #
+    def new_file(self):
+        self.code_editor.new_file()
+
     def open_file(self):
         file_path, _ = QFileDialog.getOpenFileName(self, "Open file", ".", FILE_TYPES_SEPARATOR.join((PYTHON_FILES, ALL_FILES)))
 
@@ -63,40 +48,39 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             ErrorDialog("Permission error", "Can't open this file: permission denied", self).show()
         except FileNotFoundError:
             ErrorDialog("File not found", "Can't open this file: file not found", self).show()
-        except Exception as e:
+        except Exception:
             ErrorDialog("Unknown error", "Can't open this file: unknown error", self).show()
-            print(e)
-    #
-    # def save_file(self):
-    #     file_path = self.code_editor.opened_file
-    #
-    #     if not file_path:
-    #         return self.save_file_as()
-    #
-    #     try:
-    #         with open(file_path, 'w') as f:
-    #             f.write(self.code_editor.get_plain_text())
-    #     except PermissionError:
-    #         ErrorDialog("Permission error", "Can't save this file: permission denied", self).show()
-    #     except Exception:
-    #         ErrorDialog("Unknown error", "Can't save this file: unknown error", self).show()
-    #
-    # def save_file_as(self):
-    #     file_path, _ = QFileDialog.getSaveFileName(self, "Save file", ".", FILE_TYPES_SEPARATOR.join((PYTHON_FILES, ALL_FILES)))
-    #
-    #     if not file_path:
-    #         return
-    #
-    #     try:
-    #         with open(file_path, 'w') as f:
-    #             f.write(self.code_editor.get_plain_text())
-    #     except PermissionError:
-    #         ErrorDialog("Permission error", "Can't save this file: permission denied", self).show()
-    #     except Exception:
-    #         ErrorDialog("Unknown error", "Can't save this file: unknown error", self).show()
-    #
-    #     self.code_editor.opened_file = file_path
-    #
-    # def exit_application(self):
-    #     #  TODO: soubor neni ulozen !!
-    #     self.close()
+
+    def save_file(self):
+        if not self.code_editor.opened_tabs:
+            return
+
+        if not self.code_editor.is_file_saved():
+            return self.save_file_as()
+
+        try:
+            self.code_editor.save_file()
+        except PermissionError:
+            ErrorDialog("Permission error", "Can't save this file: permission denied", self).show()
+        except Exception as e:
+            ErrorDialog("Unknown error", "Can't save this file: unknown error", self).show()
+
+    def save_file_as(self):
+        if not self.code_editor.opened_tabs:
+            return
+
+        file_path, _ = QFileDialog.getSaveFileName(self, "Save file", ".", FILE_TYPES_SEPARATOR.join((PYTHON_FILES, ALL_FILES)))
+
+        if not file_path:
+            return
+
+        try:
+            self.code_editor.save_file(file_path)
+        except PermissionError:
+            ErrorDialog("Permission error", "Can't save this file: permission denied", self).show()
+        except Exception:
+            ErrorDialog("Unknown error", "Can't save this file: unknown error", self).show()
+
+    def exit_application(self):
+        #  TODO: soubor neni ulozen !!
+        self.close()

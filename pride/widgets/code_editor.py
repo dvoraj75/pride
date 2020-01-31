@@ -84,6 +84,7 @@ class CodeEditorWidget(QWidget):
         self.setLayout(horizontal_layout)
 
         self.file_saved = True
+        self.opened_file = None
 
     def load_file(self, file):
         self._code_editor.clear()
@@ -118,17 +119,47 @@ class CodeEditorTabWidget(QWidget):
         vertical_layout.addWidget(self.tab_widget)
         self.setLayout(vertical_layout)
 
+        self.opened_tabs = 0
+
     def open_file(self, file_path: str):
         with open(file_path, 'r') as f:
             code_editor = CodeEditorWidget(self)
             code_editor.load_file(f)
             code_editor.file_saved = True
+            code_editor.opened_file = f.name
             self.add_tab(code_editor, f.name)
+
+    def new_file(self):
+        code_editor = CodeEditorWidget()
+        code_editor.file_saved = False
+        self.add_tab(code_editor, "NoName")
+
+    def save_file(self, file_path=None):
+        file = file_path or self.get_current_file()
+        current_widget = self.get_current_widget()
+
+        with open(file, 'w') as f:
+            f.write(current_widget.get_plain_text())
+
+        current_widget.opened_file = file
+        current_widget.file_saved = True
 
     def add_tab(self, code_editor: CodeEditorWidget, file_name: str):
         new_index = self.tab_widget.count()
         self.tab_widget.addTab(code_editor, os.path.basename(file_name))
         self.tab_widget.setCurrentIndex(new_index)
+        self.opened_tabs += 1
 
     def close_tab(self, index):
         self.tab_widget.removeTab(index)
+        self.opened_tabs -= 1
+
+    def is_file_saved(self):
+        current_tab = self.get_current_widget()
+        return current_tab.file_saved
+
+    def get_current_widget(self):
+        return self.tab_widget.currentWidget()
+
+    def get_current_file(self):
+        return self.get_current_widget().opened_file
