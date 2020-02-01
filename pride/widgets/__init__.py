@@ -24,7 +24,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.code_editor = CodeEditorTabWidget(self)
         self.horizontal_layout.addWidget(self.code_editor)
         self.vertical_layout.addLayout(self.horizontal_layout)
-        self.centralwidget.setLayout(self.vertical_layout)
 
         self.trigger_menu_actions()
 

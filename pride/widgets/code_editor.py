@@ -3,7 +3,7 @@ import typing
 
 from PyQt5.QtCore import Qt, QRect
 from PyQt5.QtGui import QKeyEvent, QPaintEvent, QPainter, QColor, QMouseEvent
-from PyQt5.QtWidgets import QPlainTextEdit, QWidget, QHBoxLayout, QVBoxLayout, QTabWidget, QTabBar
+from PyQt5.QtWidgets import QPlainTextEdit, QWidget, QHBoxLayout, QVBoxLayout, QTabWidget, QTabBar, QStatusBar
 
 
 class CodeEdit(QPlainTextEdit):
@@ -111,7 +111,7 @@ class CodeEditorWidget(QWidget):
         self._line_number_bar = LinesNumberBar(self._code_editor, self)
 
         horizontal_layout = QHBoxLayout()
-        horizontal_layout.setSpacing(1.5)
+        horizontal_layout.setSpacing(0)
         horizontal_layout.addWidget(self._line_number_bar)
         horizontal_layout.addWidget(self._code_editor)
 
@@ -171,8 +171,16 @@ class CodeEditorTabWidget(QWidget):
         self.tab_widget.setUsesScrollButtons(True)
         self.tab_widget.setMovable(True)
         self.tab_widget.tabCloseRequested.connect(self.close_tab)
+        self.tab_widget.currentChanged.connect(self.tab_changed)
 
+        self.editor_status_bar = QStatusBar(self)
+        self.editor_status_bar.setStyleSheet("QStatusBar{border-bottom: 1px outset grey; border-left: 1px outset grey; border-right: 1px outset grey;}")
+        self.editor_status_bar.hide()
+
+        vertical_layout.setSpacing(0)
         vertical_layout.addWidget(self.tab_widget)
+        vertical_layout.addWidget(self.editor_status_bar)
+
         self.setLayout(vertical_layout)
 
         self.opened_tabs = 0
@@ -215,6 +223,9 @@ class CodeEditorTabWidget(QWidget):
         current_widget.opened_file = file
         current_widget.file_saved = True
 
+        self.tab_changed()
+        self.set_tab_text(os.path.basename(file))
+
     def add_tab(self, code_editor: CodeEditorWidget, file_name: str) -> None:
         """
         Add new tab to the widget.
@@ -227,6 +238,21 @@ class CodeEditorTabWidget(QWidget):
         self.tab_widget.addTab(code_editor, file_name)
         self.tab_widget.setCurrentIndex(new_index)
         self.opened_tabs += 1
+
+    def tab_changed(self) -> None:
+        """
+        Change hide/show information in editor status bar
+        This method is called when currentChanged signal is emitted.
+        """
+        if not self.get_current_widget():
+            self.editor_status_bar.hide()
+        else:
+            self.editor_status_bar.showMessage(self.get_current_file() or "File not saved")
+            self.editor_status_bar.show()
+
+    def set_tab_text(self, text: str, index=None) -> None:
+        current_index = index or self.tab_widget.currentIndex()
+        self.tab_widget.setTabText(current_index, text)
 
     def close_tab(self, index: int) -> None:
         """
