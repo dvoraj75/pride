@@ -2,7 +2,6 @@
 from PyQt5.QtWidgets import QMainWindow, QFileDialog
 
 from pride.dialogs.error_dialog import ErrorDialog
-from pride.dialogs.question_dialog import QuestionDialog
 from pride.UI.main_window_ui import Ui_MainWindow
 from pride.widgets.code_editor import CodeEditorTabWidget
 
@@ -15,6 +14,9 @@ FILE_TYPES_SEPARATOR = ";;"
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
+    """
+    Main window class representing the main window of app.
+    """
     def __init__(self, *args, **kwargs):
         QMainWindow.__init__(self, *args, **kwargs)
         self.setupUi(self)
@@ -26,17 +28,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.trigger_menu_actions()
 
-    def trigger_menu_actions(self):
+    def trigger_menu_actions(self) -> None:
+        """
+        Trigger all actions in menu
+        """
         self.actionNew.triggered.connect(self.new_file)
         self.actionOpen.triggered.connect(self.open_file)
         self.actionSave.triggered.connect(self.save_file)
         self.actionSave_as.triggered.connect(self.save_file_as)
         self.actionExit.triggered.connect(self.exit_application)
 
-    def new_file(self):
+    def new_file(self) -> None:
+        """
+        Create new tab / file
+        """
         self.code_editor.new_file()
 
-    def open_file(self):
+    def open_file(self) -> None:
+        """
+        Open file in new tab.
+        """
         file_path, _ = QFileDialog.getOpenFileName(self, "Open file", ".", FILE_TYPES_SEPARATOR.join((PYTHON_FILES, ALL_FILES)))
 
         if not file_path:
@@ -51,7 +62,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         except Exception:
             ErrorDialog("Unknown error", "Can't open this file: unknown error", self).show()
 
-    def save_file(self):
+    def save_file(self) -> None:
+        """
+        Save file in active tab.
+        """
         if not self.code_editor.opened_tabs:
             return
 
@@ -65,7 +79,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         except Exception as e:
             ErrorDialog("Unknown error", "Can't save this file: unknown error", self).show()
 
-    def save_file_as(self):
+    def save_file_as(self) -> None:
+        """
+        Save as file in active tab
+        """
         if not self.code_editor.opened_tabs:
             return
 
@@ -81,6 +98,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         except Exception:
             ErrorDialog("Unknown error", "Can't save this file: unknown error", self).show()
 
-    def exit_application(self):
-        #  TODO: soubor neni ulozen !!
+    def exit_application(self) -> None:
+        """
+        Close app
+        """
         self.close()

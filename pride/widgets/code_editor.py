@@ -1,4 +1,5 @@
 import os
+import typing
 
 from PyQt5.QtCore import Qt, QRect
 from PyQt5.QtGui import QKeyEvent, QPaintEvent, QPainter, QColor, QMouseEvent
@@ -6,7 +7,18 @@ from PyQt5.QtWidgets import QPlainTextEdit, QWidget, QHBoxLayout, QVBoxLayout, Q
 
 
 class CodeEdit(QPlainTextEdit):
+    """
+    Simple inherited class from QPlainTextEdit
+    for overriding keyPressEvent.
+    """
     def keyPressEvent(self, event: QKeyEvent) -> None:
+        """
+        Overridden keyPressEvent which adjust default behaviour of
+        key tab.
+
+        Args:
+            event(QKeyEvent): qt event object with event data
+        """
         if event.key() == Qt.Key_Tab:
             self.textCursor().insertText("    ")
             return
@@ -14,7 +26,12 @@ class CodeEdit(QPlainTextEdit):
 
 
 class LinesNumberBar(QWidget):
-    def __init__(self, code_editor, parent=None):
+    """
+    This object is representing object wit lines number.
+    LinesNumber bar is connected with CodeEdit.
+    It cant work separately.
+    """
+    def __init__(self, code_editor: CodeEdit, parent=None):
         QWidget.__init__(self, parent)
         self.editor = code_editor
 
@@ -24,18 +41,32 @@ class LinesNumberBar(QWidget):
         self.update_width('1')
 
     def update(self) -> None:
+        """
+        Overridden update method of QWidget.
+        Schedule a paint event for processing only
+        if widget is visible.
+        """
         if self.isVisible():
             QWidget.update(self)
 
     def update_width(self, line_number: int) -> None:
         """
-        Change width for bigger line numbers
+        Change lines bar width. Depends on line number width.
+
+        Args:
+            line_number(int): line number
         """
         new_width = self.fontMetrics().width(str(line_number)) + 30
         if self.width() != new_width:
             self.setFixedWidth(new_width)
 
     def paintEvent(self, event: QPaintEvent) -> None:
+        """
+        Overridden paintEvent of QWidget which repainting numbers in bar.
+
+        Args:
+            event(QPaintEvent): qt event object with event data
+        """
         if self.isVisible():
             block = self.editor.firstVisibleBlock()  # first visible block of editor
             line_number = block.blockNumber()  + 1# line of first visible block
@@ -70,6 +101,9 @@ class LinesNumberBar(QWidget):
 
 
 class CodeEditorWidget(QWidget):
+    """
+    Widget which representing code editor with lines number bar.
+    """
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
 
@@ -86,25 +120,47 @@ class CodeEditorWidget(QWidget):
         self.file_saved = True
         self.opened_file = None
 
-    def load_file(self, file):
+    def load_file(self, file: typing.TextIO) -> None:
+        """
+        Load text from file to code editor.
+
+        Args:
+            file(typing.TextIO): opened file in code editor
+        """
         self._code_editor.clear()
         for line in file:
             self._code_editor.insertPlainText(line)
 
-    def get_plain_text(self):
-        return self._code_editor.toPlainText()
+    def get_plain_text(self) -> str:
+        """
+        Return text from code editor.
 
-    def is_modified(self):
-        return self._code_editor.document().isModified()
+        Returns:
+            str: text from code_editor
+        """
+        return self._code_editor.toPlainText()
 
 
 class TabBar(QTabBar):
+    """
+    Simple inherited class from QTabBar
+    for Overriding mouseReleaseEvent.
+    """
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:
+        """
+        Overridden method for closing tab with middle mouse button.
+
+        Args:
+            event(QMouseEvent): qt event object with event data:
+        """
         if event.button() == Qt.MidButton:
             self.tabCloseRequested.emit(self.tabAt(event.pos()))
 
 
 class CodeEditorTabWidget(QWidget):
+    """
+    Widget which representing code editor with tabs.
+    """
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
 
@@ -121,20 +177,35 @@ class CodeEditorTabWidget(QWidget):
 
         self.opened_tabs = 0
 
-    def open_file(self, file_path: str):
+    def open_file(self, file_path: str) -> None:
+        """
+        Open file in new tab.
+
+        Args:
+            file_path(str): file path
+        """
         with open(file_path, 'r') as f:
             code_editor = CodeEditorWidget(self)
             code_editor.load_file(f)
             code_editor.file_saved = True
             code_editor.opened_file = f.name
-            self.add_tab(code_editor, f.name)
+            self.add_tab(code_editor, os.path.basename(f.name))
 
-    def new_file(self):
+    def new_file(self) -> None:
+        """
+        Create new tab / file
+        """
         code_editor = CodeEditorWidget()
         code_editor.file_saved = False
         self.add_tab(code_editor, "NoName")
 
-    def save_file(self, file_path=None):
+    def save_file(self, file_path: str = None) -> None:
+        """
+        Save current file(as).
+
+        Args:
+            file_path(str): if file path is not None. Save as method called
+        """
         file = file_path or self.get_current_file()
         current_widget = self.get_current_widget()
 
@@ -144,22 +215,53 @@ class CodeEditorTabWidget(QWidget):
         current_widget.opened_file = file
         current_widget.file_saved = True
 
-    def add_tab(self, code_editor: CodeEditorWidget, file_name: str):
+    def add_tab(self, code_editor: CodeEditorWidget, file_name: str) -> None:
+        """
+        Add new tab to the widget.
+
+        Args:
+            code_editor(CodeEditorWidget): code editor widget in new tab
+            file_name(str): name of new tab - file name
+        """
         new_index = self.tab_widget.count()
-        self.tab_widget.addTab(code_editor, os.path.basename(file_name))
+        self.tab_widget.addTab(code_editor, file_name)
         self.tab_widget.setCurrentIndex(new_index)
         self.opened_tabs += 1
 
-    def close_tab(self, index):
+    def close_tab(self, index: int) -> None:
+        """
+        Close tab at index.
+
+        Args:
+            index(int): index of tab
+        """
         self.tab_widget.removeTab(index)
         self.opened_tabs -= 1
 
-    def is_file_saved(self):
+    def is_file_saved(self) -> bool:
+        """
+        Return if file in current widget is saved.
+
+        Returns:
+            bool: True if file is save else False
+        """
         current_tab = self.get_current_widget()
         return current_tab.file_saved
 
-    def get_current_widget(self):
+    def get_current_widget(self) -> CodeEditorWidget:
+        """
+        Return widget in current active tab
+
+        Returns:
+            CodeEditorWidget: Code editor in current tab
+        """
         return self.tab_widget.currentWidget()
 
-    def get_current_file(self):
+    def get_current_file(self) -> str:
+        """
+        Return file path of file in current active tab
+
+        Returns:
+            str: file path of file in active tab
+        """
         return self.get_current_widget().opened_file
