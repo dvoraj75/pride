@@ -268,6 +268,7 @@ class CodeEditorTabWidget(QWidget):
         current_widget = self.get_current_widget()
         if not current_widget:
             self.editor_status_bar.hide()
+            return
         else:
             self.editor_status_bar.showMessage(self.get_current_file() or "File not saved")
             self.editor_status_bar.show()
