@@ -178,6 +178,7 @@ class CodeEditorTabWidget(QWidget):
         self.editor_status_bar.hide()
 
         vertical_layout.setSpacing(0)
+        vertical_layout.setContentsMargins(5, 22, 0, 0)
         vertical_layout.addWidget(self.tab_widget)
         vertical_layout.addWidget(self.editor_status_bar)
 

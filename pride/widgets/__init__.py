@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QMainWindow, QFileDialog
 
 from pride.dialogs.error_dialog import ErrorDialog
 from pride.UI.main_window_ui import Ui_MainWindow
-from pride.widgets.code_editor import CodeEditorTabWidget
+from pride.widgets.central_widget import CentralIDEWidget
 
 
 #  TODO: presunout nekam do konfigurace
@@ -21,8 +21,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         QMainWindow.__init__(self, *args, **kwargs)
         self.setupUi(self)
 
-        self.code_editor = CodeEditorTabWidget(self)
-        self.horizontal_layout.addWidget(self.code_editor)
+        self.central_ide_widget = CentralIDEWidget(self)
+        self.code_editor = self.central_ide_widget.code_editor_widget
+        self.horizontal_layout.addWidget(self.central_ide_widget)
         self.vertical_layout.addLayout(self.horizontal_layout)
 
         self.trigger_menu_actions()
