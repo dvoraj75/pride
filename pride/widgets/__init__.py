@@ -1,6 +1,7 @@
 
-from PyQt5.QtWidgets import QMainWindow, QFileDialog, QToolBar
+from PyQt5.QtWidgets import QMainWindow, QFileDialog, QToolBar, QWidget, QHBoxLayout, QSpacerItem, QSizePolicy, QLabel
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QTextCursor
 
 from pride.dialogs.error_dialog import ErrorDialog
 from pride.UI.main_window_ui import Ui_MainWindow
@@ -12,6 +13,34 @@ from pride.widgets.central_widget import CentralIDEWidget
 ALL_FILES = "All Files (*)"
 PYTHON_FILES = "Python files (*.py)"
 FILE_TYPES_SEPARATOR = ";;"
+
+
+class StatusBarWidget(QWidget):
+    """
+    Simple status bar widget for main information
+    like line and column of cursor, git branch, python version.
+    """
+    def __init__(self, parent=None):
+        QWidget.__init__(self, parent)
+        horizontal_layout = QHBoxLayout(self)
+
+        horizontal_spacer = QSpacerItem(400, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        horizontal_layout.addItem(horizontal_spacer)
+
+        self.line_and_column_label = QLabel(self)
+        self.line_and_column_pattern = "line:{} column:{}"
+
+        horizontal_layout.addWidget(self.line_and_column_label)
+
+    def set_line_and_column(self, line: int, column: int) -> None:
+        """
+        Set new values to line and column label
+
+        Args:
+            line(int): line number
+            column(int): column number
+        """
+        self.line_and_column_label.setText(self.line_and_column_pattern.format(line, column))
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -31,8 +60,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.bottom_tool_bar.setMovable(False)
         self.bottom_tool_bar.setAllowedAreas(Qt.BottomToolBarArea)
         self.addToolBar(Qt.BottomToolBarArea, self.bottom_tool_bar)
-
         self.bottom_tool_bar.addAction("bottom tool bar")
+
+        self.statusbar_widget = StatusBarWidget(self.statusbar)
+        self.statusbar.addPermanentWidget(self.statusbar_widget, 1)
 
         self.trigger_menu_actions()
 
@@ -45,6 +76,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionSave.triggered.connect(self.save_file)
         self.actionSave_as.triggered.connect(self.save_file_as)
         self.actionExit.triggered.connect(self.exit_application)
+
+    def set_new_cursor_position(self, cursor: QTextCursor) -> None:
+        """
+        Set new cursor position in main status bar
+
+        Args:
+            cursor(QTextCursor): active cursor of code editor in active tab
+        """
+        self.statusbar_widget.set_line_and_column(
+            cursor.block().blockNumber() + 1,
+            cursor.positionInBlock() + 1
+        )
 
     def new_file(self) -> None:
         """

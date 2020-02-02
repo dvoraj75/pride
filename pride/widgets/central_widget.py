@@ -6,6 +6,11 @@ from pride.widgets.file_tree import FileTreeWidget
 
 
 class CentralIDEWidget(QWidget):
+    """
+    Central widget of IDE adding together
+    main code editor window and file tree/list
+    """
+
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
         self.file_tree_widget = FileTreeWidget(self)

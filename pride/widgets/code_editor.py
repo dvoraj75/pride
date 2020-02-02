@@ -2,7 +2,7 @@ import os
 import typing
 
 from PyQt5.QtCore import Qt, QRect
-from PyQt5.QtGui import QKeyEvent, QPaintEvent, QPainter, QColor, QMouseEvent
+from PyQt5.QtGui import QKeyEvent, QPaintEvent, QPainter, QColor, QMouseEvent, QTextCursor
 from PyQt5.QtWidgets import QPlainTextEdit, QWidget, QHBoxLayout, QVBoxLayout, QTabWidget, QTabBar, QStatusBar
 
 
@@ -108,6 +108,7 @@ class CodeEditorWidget(QWidget):
         QWidget.__init__(self, parent)
 
         self._code_editor = CodeEdit(self)
+        self._code_editor.cursorPositionChanged.connect(self.cursor_position_changed)
         self._line_number_bar = LinesNumberBar(self._code_editor, self)
 
         horizontal_layout = QHBoxLayout()
@@ -119,6 +120,15 @@ class CodeEditorWidget(QWidget):
 
         self.file_saved = True
         self.opened_file = None
+
+        # TODO: TOOOOOOOO ugly, is there another way?
+        self.main_window = self.parent().parent().parent().parent().parent()
+
+    def cursor_position_changed(self):
+        """
+        This method is called when cursorPositionChanged signal is emitted.
+        """
+        self.main_window.set_new_cursor_position(self.get_cursor())
 
     def load_file(self, file: typing.TextIO) -> None:
         """
@@ -139,6 +149,15 @@ class CodeEditorWidget(QWidget):
             str: text from code_editor
         """
         return self._code_editor.toPlainText()
+
+    def get_cursor(self) -> QTextCursor:
+        """
+        Returns active cursor of text widget
+
+        Returns:
+            QTextCursor: active cursor
+        """
+        return self._code_editor.textCursor()
 
 
 class TabBar(QTabBar):
@@ -204,7 +223,7 @@ class CodeEditorTabWidget(QWidget):
         """
         Create new tab / file
         """
-        code_editor = CodeEditorWidget()
+        code_editor = CodeEditorWidget(self)
         code_editor.file_saved = False
         self.add_tab(code_editor, "NoName")
 
@@ -242,16 +261,27 @@ class CodeEditorTabWidget(QWidget):
 
     def tab_changed(self) -> None:
         """
-        Change hide/show information in editor status bar
+        Change hide/show information in editor status bar.
+        Update line and column in main status bar.
         This method is called when currentChanged signal is emitted.
         """
-        if not self.get_current_widget():
+        current_widget = self.get_current_widget()
+        if not current_widget:
             self.editor_status_bar.hide()
         else:
             self.editor_status_bar.showMessage(self.get_current_file() or "File not saved")
             self.editor_status_bar.show()
 
-    def set_tab_text(self, text: str, index=None) -> None:
+        current_widget.main_window.set_new_cursor_position(current_widget.get_cursor())
+
+    def set_tab_text(self, text: str, index: int = None) -> None:
+        """
+        Set new text of current tab
+
+        Args:
+            text(str): new text
+            index(int): index of tab. If None -> use current
+        """
         current_index = index or self.tab_widget.currentIndex()
         self.tab_widget.setTabText(current_index, text)
 
