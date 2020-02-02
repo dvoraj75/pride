@@ -32,7 +32,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.bottom_tool_bar.setAllowedAreas(Qt.BottomToolBarArea)
         self.addToolBar(Qt.BottomToolBarArea, self.bottom_tool_bar)
 
-        self.top_tool_bar.addAction("top tool bar")
         self.bottom_tool_bar.addAction("bottom tool bar")
 
         self.trigger_menu_actions()
