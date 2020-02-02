@@ -1,5 +1,6 @@
 
-from PyQt5.QtWidgets import QMainWindow, QFileDialog
+from PyQt5.QtWidgets import QMainWindow, QFileDialog, QToolBar
+from PyQt5.QtCore import Qt
 
 from pride.dialogs.error_dialog import ErrorDialog
 from pride.UI.main_window_ui import Ui_MainWindow
@@ -25,6 +26,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.code_editor = self.central_ide_widget.code_editor_widget
         self.horizontal_layout.addWidget(self.central_ide_widget)
         self.vertical_layout.addLayout(self.horizontal_layout)
+
+        self.bottom_tool_bar = QToolBar(self)
+        self.bottom_tool_bar.setMovable(False)
+        self.bottom_tool_bar.setAllowedAreas(Qt.BottomToolBarArea)
+        self.addToolBar(Qt.BottomToolBarArea, self.bottom_tool_bar)
+
+        self.top_tool_bar.addAction("top tool bar")
+        self.bottom_tool_bar.addAction("bottom tool bar")
 
         self.trigger_menu_actions()
 
