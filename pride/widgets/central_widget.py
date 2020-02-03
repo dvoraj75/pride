@@ -1,8 +1,8 @@
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QSplitter
 from PyQt5.QtCore import Qt
 
-from pride.widgets.code_editor import CodeEditorTabWidget
-from pride.widgets.file_tree import FileTreeWidget
+from pride.widgets import CodeEditorTabWidget
+from pride.widgets import FileTreeWidget
 
 
 class CentralIDEWidget(QWidget):
