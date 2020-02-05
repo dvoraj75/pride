@@ -35,7 +35,10 @@ class OpenedFilesWidget(QWidget, Ui_OpenedFilesWidget):
         self.setupUi(self)
 
         self.tree_widget.itemDoubleClicked.connect(self.open_file_on_double_click)
+        self.list_widget.itemDoubleClicked.connect(self.open_file_on_double_click)
         self.code_editor = parent.code_editor_widget
+
+        self.opened_directories = set()
 
     def add_file(self, path: str) -> None:
         """
@@ -57,7 +60,6 @@ class OpenedFilesWidget(QWidget, Ui_OpenedFilesWidget):
         Args:
             path(str): file path
         """
-        print("Wants to close file:", path)
         for idx in range(self.list_widget.count()):
             item = self.list_widget.item(idx)
             if item and item.path == path:
@@ -93,6 +95,11 @@ class OpenedFilesWidget(QWidget, Ui_OpenedFilesWidget):
         Args:
             dir_path(str): base dir path
         """
+        if dir_path in self.opened_directories:
+            # TODO: set new current dir
+            return
+
+        self.opened_directories.add(dir_path)
         parent_folder = TreeItem(self.tree_widget)
         self.tree_widget.setItemWidget(parent_folder, 0, ItemWidget(os.path.basename(dir_path), dir_path))
         self._add_dirs(dir_path, parent_folder)

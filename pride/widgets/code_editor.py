@@ -204,6 +204,7 @@ class CodeEditorTabWidget(QWidget):
         self.setLayout(vertical_layout)
 
         self.opened_tabs = 0
+        self.opened_files = set()
 
         # TODO: TOOOOOOOO ugly, is there another way?
         self.main_window = self.parent().parent()
@@ -215,6 +216,10 @@ class CodeEditorTabWidget(QWidget):
         Args:
             file_path(str): file path
         """
+        if file_path in self.opened_files:
+            self.change_current_tab(file_path)
+            return
+
         with open(file_path, 'r') as f:
             code_editor = CodeEditorWidget(self)
             code_editor.load_file(f)
@@ -222,6 +227,7 @@ class CodeEditorTabWidget(QWidget):
             code_editor.opened_file = f.name
             self.add_tab(code_editor, os.path.basename(f.name))
 
+        self.opened_files.add(file_path)
         self.main_window.central_ide_widget.add_file_to_list(file_path)
 
     def new_file(self) -> None:
@@ -305,6 +311,10 @@ class CodeEditorTabWidget(QWidget):
         self.tab_widget.removeTab(index)
         self.opened_tabs -= 1
         self.main_window.central_ide_widget.remove_file_from_list(file_path)
+        try:
+            self.opened_files.remove(file_path)
+        except KeyError:
+            pass
 
     def is_file_saved(self) -> bool:
         """
@@ -333,3 +343,15 @@ class CodeEditorTabWidget(QWidget):
             str: file path of file in active tab
         """
         return self.get_current_widget().opened_file
+
+    def change_current_tab(self, file_path: str) -> None:
+        """
+        Change current active tab to tab with file_path file
+
+        Args:
+            file_path(str): file path
+        """
+        for idx in range(self.tab_widget.count()):
+            if self.tab_widget.widget(idx).opened_file == file_path:
+                self.tab_widget.setCurrentIndex(idx)
+                break
