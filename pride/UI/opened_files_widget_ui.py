@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'pride/UI/files_tree_widget.ui'
+# Form implementation generated from reading ui file 'pride/UI/opened_files_widget.ui'
 #
 # Created by: PyQt5 UI code generator 5.14.0
 #
@@ -10,15 +10,15 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_open_files_tree(object):
-    def setupUi(self, open_files_tree):
-        open_files_tree.setObjectName("open_files_tree")
-        open_files_tree.resize(393, 823)
-        self.verticalLayout = QtWidgets.QVBoxLayout(open_files_tree)
+class Ui_OpenedFilesWidget(object):
+    def setupUi(self, OpenedFilesWidget):
+        OpenedFilesWidget.setObjectName("OpenedFilesWidget")
+        OpenedFilesWidget.resize(393, 823)
+        self.verticalLayout = QtWidgets.QVBoxLayout(OpenedFilesWidget)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setSpacing(0)
         self.verticalLayout.setObjectName("verticalLayout")
-        self.splitter = QtWidgets.QSplitter(open_files_tree)
+        self.splitter = QtWidgets.QSplitter(OpenedFilesWidget)
         self.splitter.setOrientation(QtCore.Qt.Vertical)
         self.splitter.setHandleWidth(0)
         self.splitter.setChildrenCollapsible(False)
@@ -35,11 +35,11 @@ class Ui_open_files_tree(object):
         self.label.setFont(font)
         self.label.setObjectName("label")
         self.verticalLayout_2.addWidget(self.label)
-        self.treeWidget = QtWidgets.QTreeWidget(self.widget)
-        self.treeWidget.setHeaderHidden(True)
-        self.treeWidget.setObjectName("treeWidget")
-        self.treeWidget.headerItem().setText(0, "1")
-        self.verticalLayout_2.addWidget(self.treeWidget)
+        self.tree_widget = QtWidgets.QTreeWidget(self.widget)
+        self.tree_widget.setHeaderHidden(True)
+        self.tree_widget.setObjectName("tree_widget")
+        self.tree_widget.headerItem().setText(0, "1")
+        self.verticalLayout_2.addWidget(self.tree_widget)
         self.widget_2 = QtWidgets.QWidget(self.splitter)
         self.widget_2.setObjectName("widget_2")
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.widget_2)
@@ -52,26 +52,26 @@ class Ui_open_files_tree(object):
         self.label_2.setFont(font)
         self.label_2.setObjectName("label_2")
         self.verticalLayout_3.addWidget(self.label_2)
-        self.listWidget = QtWidgets.QListWidget(self.widget_2)
-        self.listWidget.setObjectName("listWidget")
-        self.verticalLayout_3.addWidget(self.listWidget)
+        self.list_widget = QtWidgets.QListWidget(self.widget_2)
+        self.list_widget.setObjectName("list_widget")
+        self.verticalLayout_3.addWidget(self.list_widget)
         self.verticalLayout.addWidget(self.splitter)
 
-        self.retranslateUi(open_files_tree)
-        QtCore.QMetaObject.connectSlotsByName(open_files_tree)
+        self.retranslateUi(OpenedFilesWidget)
+        QtCore.QMetaObject.connectSlotsByName(OpenedFilesWidget)
 
-    def retranslateUi(self, open_files_tree):
+    def retranslateUi(self, OpenedFilesWidget):
         _translate = QtCore.QCoreApplication.translate
-        open_files_tree.setWindowTitle(_translate("open_files_tree", "Form"))
-        self.label.setText(_translate("open_files_tree", "Directories"))
-        self.label_2.setText(_translate("open_files_tree", "Files"))
+        OpenedFilesWidget.setWindowTitle(_translate("OpenedFilesWidget", "Form"))
+        self.label.setText(_translate("OpenedFilesWidget", "Directories"))
+        self.label_2.setText(_translate("OpenedFilesWidget", "Files"))
 
 
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    open_files_tree = QtWidgets.QWidget()
-    ui = Ui_open_files_tree()
-    ui.setupUi(open_files_tree)
-    open_files_tree.show()
+    OpenedFilesWidget = QtWidgets.QWidget()
+    ui = Ui_OpenedFilesWidget()
+    ui.setupUi(OpenedFilesWidget)
+    OpenedFilesWidget.show()
     sys.exit(app.exec_())

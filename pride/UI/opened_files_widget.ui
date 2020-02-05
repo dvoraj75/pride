@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>open_files_tree</class>
- <widget class="QWidget" name="open_files_tree">
+ <class>OpenedFilesWidget</class>
+ <widget class="QWidget" name="OpenedFilesWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -56,7 +56,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QTreeWidget" name="treeWidget">
+        <widget class="QTreeWidget" name="tree_widget">
          <property name="headerHidden">
           <bool>true</bool>
          </property>
@@ -85,7 +85,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QListWidget" name="listWidget"/>
+        <widget class="QListWidget" name="list_widget"/>
        </item>
       </layout>
      </widget>

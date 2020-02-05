@@ -205,6 +205,9 @@ class CodeEditorTabWidget(QWidget):
 
         self.opened_tabs = 0
 
+        # TODO: TOOOOOOOO ugly, is there another way?
+        self.main_window = self.parent().parent()
+
     def open_file(self, file_path: str) -> None:
         """
         Open file in new tab.
@@ -218,6 +221,8 @@ class CodeEditorTabWidget(QWidget):
             code_editor.file_saved = True
             code_editor.opened_file = f.name
             self.add_tab(code_editor, os.path.basename(f.name))
+
+        self.main_window.central_ide_widget.add_file_to_list(file_path)
 
     def new_file(self) -> None:
         """
@@ -263,6 +268,7 @@ class CodeEditorTabWidget(QWidget):
         """
         Change hide/show information in editor status bar.
         Update line and column in main status bar.
+        Set new active file in list widget.
         This method is called when currentChanged signal is emitted.
         """
         current_widget = self.get_current_widget()
@@ -273,7 +279,9 @@ class CodeEditorTabWidget(QWidget):
             self.editor_status_bar.showMessage(self.get_current_file() or "File not saved")
             self.editor_status_bar.show()
 
-        current_widget.main_window.set_new_cursor_position(current_widget.get_cursor())
+        self.main_window.set_new_cursor_position(current_widget.get_cursor())
+
+        self.main_window.central_ide_widget.change_current_active_file(current_widget.opened_file)
 
     def set_tab_text(self, text: str, index: int = None) -> None:
         """
@@ -293,8 +301,10 @@ class CodeEditorTabWidget(QWidget):
         Args:
             index(int): index of tab
         """
+        file_path = self.tab_widget.widget(index).opened_file
         self.tab_widget.removeTab(index)
         self.opened_tabs -= 1
+        self.main_window.central_ide_widget.remove_file_from_list(file_path)
 
     def is_file_saved(self) -> bool:
         """
