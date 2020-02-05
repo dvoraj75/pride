@@ -1,10 +1,11 @@
 import os
 
-from PyQt5.QtWidgets import QWidget, QListWidgetItem
+from PyQt5.QtWidgets import QWidget, QListWidgetItem, QTreeWidgetItem
 from PyQt5.QtCore import QSize
+from PyQt5.QtGui import QIcon
 
 from pride.UI.opened_files_widget_ui import Ui_OpenedFilesWidget
-from pride.UI.list_item_widget_ui import Ui_ListItemWidget
+from pride.UI.item_widget_ui import Ui_ItemWidget
 
 
 class FileItem(QListWidgetItem):
@@ -13,7 +14,7 @@ class FileItem(QListWidgetItem):
         self.path = path
 
 
-class ItemWidget(QWidget, Ui_ListItemWidget):
+class ItemWidget(QWidget, Ui_ItemWidget):
     def __init__(self, file_name, file_path, parent=None):
         QWidget.__init__(self, parent)
         self.setupUi(self)
@@ -74,3 +75,32 @@ class OpenedFilesWidget(QWidget, Ui_OpenedFilesWidget):
             idx(int): index of row
         """
         self.list_widget.setCurrentRow(idx)
+
+    def open_dir(self, dir_path: str) -> None:
+        """
+        Add parent dir to tree and add subdirs.
+
+        Args:
+            dir_path(str): base dir path
+        """
+        dir_path = "/prcat/prdel"
+        parent_folder = QTreeWidgetItem(self.tree_widget)
+        self.tree_widget.setItemWidget(parent_folder, 0, ItemWidget(os.path.basename(dir_path), dir_path))
+        self._add_dirs(dir_path, parent_folder)
+        print("sorting")
+
+    def _add_dirs(self, path: str, tree: QTreeWidgetItem) -> None:
+        """
+        Add dirs/files to tree.
+        If path is dir call this function recursive.
+
+        Args:
+            path(str): base path
+            tree(QTreeWidgetItem): tree or subtree
+        """
+        for element in os.listdir(path):
+            parent_path = path + "/" + element
+            parent_item = QTreeWidgetItem(tree or self.tree_widget, [os.path.basename(element)])
+
+            if os.path.isdir(parent_path):
+                self._add_dirs(parent_path, parent_item)

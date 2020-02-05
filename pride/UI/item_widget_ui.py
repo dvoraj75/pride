@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'pride/UI/list_item_widget.ui'
+# Form implementation generated from reading ui file 'pride/UI/item_widget.ui'
 #
 # Created by: PyQt5 UI code generator 5.14.0
 #
@@ -10,20 +10,20 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_ListItemWidget(object):
-    def setupUi(self, ListItemWidget):
-        ListItemWidget.setObjectName("ListItemWidget")
-        ListItemWidget.resize(153, 36)
+class Ui_ItemWidget(object):
+    def setupUi(self, ItemWidget):
+        ItemWidget.setObjectName("ItemWidget")
+        ItemWidget.resize(153, 36)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(ListItemWidget.sizePolicy().hasHeightForWidth())
-        ListItemWidget.setSizePolicy(sizePolicy)
-        self.horizontalLayout = QtWidgets.QHBoxLayout(ListItemWidget)
+        sizePolicy.setHeightForWidth(ItemWidget.sizePolicy().hasHeightForWidth())
+        ItemWidget.setSizePolicy(sizePolicy)
+        self.horizontalLayout = QtWidgets.QHBoxLayout(ItemWidget)
         self.horizontalLayout.setSizeConstraint(QtWidgets.QLayout.SetMaximumSize)
         self.horizontalLayout.setContentsMargins(2, 4, 0, 0)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.file_name = QtWidgets.QLabel(ListItemWidget)
+        self.file_name = QtWidgets.QLabel(ItemWidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -43,7 +43,7 @@ class Ui_ListItemWidget(object):
         self.file_name.setText("")
         self.file_name.setObjectName("file_name")
         self.horizontalLayout.addWidget(self.file_name)
-        self.file_path = QtWidgets.QLabel(ListItemWidget)
+        self.file_path = QtWidgets.QLabel(ItemWidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -67,19 +67,19 @@ class Ui_ListItemWidget(object):
         self.file_path.setObjectName("file_path")
         self.horizontalLayout.addWidget(self.file_path)
 
-        self.retranslateUi(ListItemWidget)
-        QtCore.QMetaObject.connectSlotsByName(ListItemWidget)
+        self.retranslateUi(ItemWidget)
+        QtCore.QMetaObject.connectSlotsByName(ItemWidget)
 
-    def retranslateUi(self, ListItemWidget):
+    def retranslateUi(self, ItemWidget):
         _translate = QtCore.QCoreApplication.translate
-        ListItemWidget.setWindowTitle(_translate("ListItemWidget", "Form"))
+        ItemWidget.setWindowTitle(_translate("ItemWidget", "Form"))
 
 
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    ListItemWidget = QtWidgets.QWidget()
-    ui = Ui_ListItemWidget()
-    ui.setupUi(ListItemWidget)
-    ListItemWidget.show()
+    ItemWidget = QtWidgets.QWidget()
+    ui = Ui_ItemWidget()
+    ui.setupUi(ItemWidget)
+    ItemWidget.show()
     sys.exit(app.exec_())

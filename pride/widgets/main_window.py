@@ -73,6 +73,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         self.actionNew.triggered.connect(self.new_file)
         self.actionOpen.triggered.connect(self.open_file)
+        self.actionOpen_folder.triggered.connect(self.open_dir)
         self.actionSave.triggered.connect(self.save_file)
         self.actionSave_as.triggered.connect(self.save_file_as)
         self.actionExit.triggered.connect(self.exit_application)
@@ -106,12 +107,29 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         try:
             self.code_editor.open_file(file_path)
         except PermissionError:
-            #  TODO: logovani
             ErrorDialog("Permission error", "Can't open this file: permission denied", self).show()
         except FileNotFoundError:
             ErrorDialog("File not found", "Can't open this file: file not found", self).show()
         except Exception:
             ErrorDialog("Unknown error", "Can't open this file: unknown error", self).show()
+
+    def open_dir(self) -> None:
+        """
+        Open directory
+        """
+        dir_path = QFileDialog.getExistingDirectory(self, "Open folder", "./", QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks)
+
+        if not dir_path:
+            return
+
+        try:
+            self.central_ide_widget.open_dir(dir_path)
+        except PermissionError:
+            ErrorDialog("Permission error", "Can't open this directory: permission denied", self).show()
+        except FileNotFoundError:
+            ErrorDialog("File not found", "Can't open this directory: directory not found", self).show()
+        except Exception:
+            ErrorDialog("Unknown error", "Can't open this directory: unknown error", self).show()
 
     def save_file(self) -> None:
         """

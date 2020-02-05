@@ -53,3 +53,12 @@ class CentralIDEWidget(QWidget):
             file_path(str): file path
         """
         self.opened_files_widget.change_current_active_file(file_path)
+
+    def open_dir(self, dir_path: str) -> None:
+        """
+        Just wrapper around OpenedFilesWidget class
+
+        Args:
+            dir_path(str): file path
+        """
+        self.opened_files_widget.open_dir(dir_path)

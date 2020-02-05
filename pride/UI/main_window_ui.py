@@ -82,8 +82,13 @@ class Ui_MainWindow(object):
         icon = QtGui.QIcon.fromTheme("document-save")
         self.actionSave.setIcon(icon)
         self.actionSave.setObjectName("actionSave")
+        self.actionOpen_folder = QtWidgets.QAction(MainWindow)
+        icon = QtGui.QIcon.fromTheme("folder-open")
+        self.actionOpen_folder.setIcon(icon)
+        self.actionOpen_folder.setObjectName("actionOpen_folder")
         self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionOpen)
+        self.menuFile.addAction(self.actionOpen_folder)
         self.menuFile.addAction(self.actionSave)
         self.menuFile.addAction(self.actionSave_as)
         self.menuFile.addAction(self.actionExit)
@@ -137,6 +142,8 @@ class Ui_MainWindow(object):
         self.actionAbout.setText(_translate("MainWindow", "About"))
         self.actionSave.setText(_translate("MainWindow", "Save"))
         self.actionSave.setShortcut(_translate("MainWindow", "Ctrl+S"))
+        self.actionOpen_folder.setText(_translate("MainWindow", "Open folder..."))
+        self.actionOpen_folder.setShortcut(_translate("MainWindow", "Ctrl+Shift+O"))
 
 
 if __name__ == "__main__":
