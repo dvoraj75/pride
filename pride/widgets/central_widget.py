@@ -13,8 +13,8 @@ class CentralIDEWidget(QWidget):
 
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
-        self.opened_files_widget = OpenedFilesWidget(self)
         self.code_editor_widget = CodeEditorTabWidget(self)
+        self.opened_files_widget = OpenedFilesWidget(self)
 
         splitter = QSplitter(Qt.Horizontal)
         splitter.addWidget(self.opened_files_widget)

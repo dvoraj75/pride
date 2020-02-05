@@ -2,15 +2,21 @@ import os
 
 from PyQt5.QtWidgets import QWidget, QListWidgetItem, QTreeWidgetItem
 from PyQt5.QtCore import QSize
-from PyQt5.QtGui import QIcon
 
 from pride.UI.opened_files_widget_ui import Ui_OpenedFilesWidget
 from pride.UI.item_widget_ui import Ui_ItemWidget
+from pride.dialogs.error_dialog import ErrorDialog
 
 
 class FileItem(QListWidgetItem):
     def __init__(self, path, parent=None):
         QListWidgetItem.__init__(self, parent)
+        self.path = path
+
+
+class TreeItem(QTreeWidgetItem):
+    def __init__(self, tree, strings=None, path=None):
+        QTreeWidgetItem.__init__(self, tree, strings)
         self.path = path
 
 
@@ -27,6 +33,9 @@ class OpenedFilesWidget(QWidget, Ui_OpenedFilesWidget):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
         self.setupUi(self)
+
+        self.tree_widget.itemDoubleClicked.connect(self.open_file_on_double_click)
+        self.code_editor = parent.code_editor_widget
 
     def add_file(self, path: str) -> None:
         """
@@ -48,10 +57,11 @@ class OpenedFilesWidget(QWidget, Ui_OpenedFilesWidget):
         Args:
             path(str): file path
         """
+        print("Wants to close file:", path)
         for idx in range(self.list_widget.count()):
-            item = self.list_widget.takeItem(idx)
+            item = self.list_widget.item(idx)
             if item and item.path == path:
-                self.list_widget.removeItemWidget(item)
+                self.list_widget.takeItem(idx)
                 break
 
     def change_current_active_file(self, file_path):
@@ -83,7 +93,7 @@ class OpenedFilesWidget(QWidget, Ui_OpenedFilesWidget):
         Args:
             dir_path(str): base dir path
         """
-        parent_folder = QTreeWidgetItem(self.tree_widget)
+        parent_folder = TreeItem(self.tree_widget)
         self.tree_widget.setItemWidget(parent_folder, 0, ItemWidget(os.path.basename(dir_path), dir_path))
         self._add_dirs(dir_path, parent_folder)
         print("sorting")
@@ -99,7 +109,19 @@ class OpenedFilesWidget(QWidget, Ui_OpenedFilesWidget):
         """
         for element in os.listdir(path):
             parent_path = path + "/" + element
-            parent_item = QTreeWidgetItem(tree or self.tree_widget, [os.path.basename(element)])
+            parent_item = TreeItem(tree or self.tree_widget, [os.path.basename(element)], parent_path)
 
             if os.path.isdir(parent_path):
                 self._add_dirs(parent_path, parent_item)
+
+    def open_file_on_double_click(self, item):
+        if item.path and not os.path.isdir(item.path):
+            try:
+                self.code_editor.open_file(item.path)
+            except PermissionError:
+                ErrorDialog("Permission error", "Can't open this file: permission denied", self).show()
+            except FileNotFoundError:
+                ErrorDialog("File not found", "Can't open this file: file not found", self).show()
+            except Exception:
+                ErrorDialog("Unknown error", "Can't open this file: unknown error", self).show()
+

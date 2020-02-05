@@ -107,6 +107,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         try:
             self.code_editor.open_file(file_path)
         except PermissionError:
+            #  TODO: logovani
             ErrorDialog("Permission error", "Can't open this file: permission denied", self).show()
         except FileNotFoundError:
             ErrorDialog("File not found", "Can't open this file: file not found", self).show()
@@ -128,7 +129,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             ErrorDialog("Permission error", "Can't open this directory: permission denied", self).show()
         except FileNotFoundError:
             ErrorDialog("File not found", "Can't open this directory: directory not found", self).show()
-        except Exception:
+        except Exception as e:
+            print("3", type(e), e)
             ErrorDialog("Unknown error", "Can't open this directory: unknown error", self).show()
 
     def save_file(self) -> None:
