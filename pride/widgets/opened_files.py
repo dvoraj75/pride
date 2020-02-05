@@ -83,7 +83,6 @@ class OpenedFilesWidget(QWidget, Ui_OpenedFilesWidget):
         Args:
             dir_path(str): base dir path
         """
-        dir_path = "/prcat/prdel"
         parent_folder = QTreeWidgetItem(self.tree_widget)
         self.tree_widget.setItemWidget(parent_folder, 0, ItemWidget(os.path.basename(dir_path), dir_path))
         self._add_dirs(dir_path, parent_folder)
