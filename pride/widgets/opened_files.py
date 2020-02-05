@@ -109,7 +109,7 @@ class OpenedFilesWidget(QWidget, Ui_OpenedFilesWidget):
         """
         for element in os.listdir(path):
             parent_path = path + "/" + element
-            parent_item = TreeItem(tree or self.tree_widget, [os.path.basename(element)], parent_path)
+            parent_item = TreeItem(tree, [os.path.basename(element)], parent_path)
 
             if os.path.isdir(parent_path):
                 self._add_dirs(parent_path, parent_item)
