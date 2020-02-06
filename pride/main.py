@@ -6,8 +6,6 @@ from pride.widgets import MainWindow
 
 
 if __name__ == "__main__":
-    globals()['global_objects_'] = dict()
-
     app = QApplication(sys.argv)
     window = MainWindow()
     window.showMaximized()

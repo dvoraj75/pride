@@ -1,10 +1,12 @@
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QSplitter
 from PyQt5.QtCore import Qt
 
+from pride.common.decorators import global_object
 from pride.widgets import CodeEditorTabWidget
 from pride.widgets import OpenedFilesWidget
 
 
+@global_object
 class CentralIDEWidget(QWidget):
     """
     Central widget of IDE adding together

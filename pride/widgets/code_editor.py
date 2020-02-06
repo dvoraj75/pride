@@ -5,6 +5,8 @@ from PyQt5.QtCore import Qt, QRect
 from PyQt5.QtGui import QKeyEvent, QPaintEvent, QPainter, QColor, QMouseEvent, QTextCursor
 from PyQt5.QtWidgets import QPlainTextEdit, QWidget, QHBoxLayout, QVBoxLayout, QTabWidget, QTabBar, QStatusBar
 
+from pride.common.decorators import global_instances
+
 
 class CodeEdit(QPlainTextEdit):
     """
@@ -38,7 +40,7 @@ class LinesNumberBar(QWidget):
         self.editor.updateRequest.connect(self.update)
         self.editor.blockCountChanged.connect(self.update_width)
 
-        self.update_width('1')
+        self.update_width(1)
 
     def update(self) -> None:
         """
@@ -121,8 +123,7 @@ class CodeEditorWidget(QWidget):
         self.file_saved = True
         self.opened_file = None
 
-        # TODO: TOOOOOOOO ugly, is there another way?
-        self.main_window = self.parent().parent().parent().parent().parent()
+        self.main_window = global_instances.get("MainWindow")
 
     def cursor_position_changed(self):
         """
@@ -206,8 +207,8 @@ class CodeEditorTabWidget(QWidget):
         self.opened_tabs = 0
         self.opened_files = set()
 
-        # TODO: TOOOOOOOO ugly, is there another way?
-        self.main_window = self.parent().parent()
+        self.main_window = global_instances.get("MainWindow")
+        self.central_ide_widget = global_instances.get("CentralIDEWidget")
 
     def open_file(self, file_path: str) -> None:
         """
@@ -228,7 +229,7 @@ class CodeEditorTabWidget(QWidget):
             self.add_tab(code_editor, os.path.basename(f.name))
 
         self.opened_files.add(file_path)
-        self.main_window.central_ide_widget.add_file_to_list(file_path)
+        self.central_ide_widget.add_file_to_list(file_path)
 
     def new_file(self) -> None:
         """
@@ -287,7 +288,7 @@ class CodeEditorTabWidget(QWidget):
 
         self.main_window.set_new_cursor_position(current_widget.get_cursor())
 
-        self.main_window.central_ide_widget.change_current_active_file(current_widget.opened_file)
+        self.central_ide_widget.change_current_active_file(current_widget.opened_file)
 
     def set_tab_text(self, text: str, index: int = None) -> None:
         """
@@ -310,7 +311,7 @@ class CodeEditorTabWidget(QWidget):
         file_path = self.tab_widget.widget(index).opened_file
         self.tab_widget.removeTab(index)
         self.opened_tabs -= 1
-        self.main_window.central_ide_widget.remove_file_from_list(file_path)
+        self.central_ide_widget.remove_file_from_list(file_path)
         try:
             self.opened_files.remove(file_path)
         except KeyError:

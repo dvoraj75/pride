@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QMainWindow, QFileDialog, QToolBar, QWidget, QHBoxLa
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QTextCursor
 
+from pride.common.decorators import global_object
 from pride.dialogs.error_dialog import ErrorDialog
 from pride.UI.main_window_ui import Ui_MainWindow
 from pride.widgets import CentralIDEWidget
@@ -43,12 +44,14 @@ class StatusBarWidget(QWidget):
         self.line_and_column_label.setText(self.line_and_column_pattern.format(line, column))
 
 
+@global_object
 class MainWindow(QMainWindow, Ui_MainWindow):
     """
     Main window class representing the main window of app.
     """
     def __init__(self, *args, **kwargs):
         QMainWindow.__init__(self, *args, **kwargs)
+        globals()['global_objects_'] = dict()
         self.setupUi(self)
 
         self.central_ide_widget = CentralIDEWidget(self)

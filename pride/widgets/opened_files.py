@@ -3,9 +3,10 @@ import os
 from PyQt5.QtWidgets import QWidget, QListWidgetItem, QTreeWidgetItem
 from PyQt5.QtCore import QSize
 
-from pride.UI.opened_files_widget_ui import Ui_OpenedFilesWidget
-from pride.UI.item_widget_ui import Ui_ItemWidget
+from pride.common.decorators import global_instances
 from pride.dialogs.error_dialog import ErrorDialog
+from pride.UI.item_widget_ui import Ui_ItemWidget
+from pride.UI.opened_files_widget_ui import Ui_OpenedFilesWidget
 
 
 class FileItem(QListWidgetItem):
@@ -36,7 +37,7 @@ class OpenedFilesWidget(QWidget, Ui_OpenedFilesWidget):
 
         self.tree_widget.itemDoubleClicked.connect(self.open_file_on_double_click)
         self.list_widget.itemDoubleClicked.connect(self.open_file_on_double_click)
-        self.code_editor = parent.code_editor_widget
+        self.code_editor = global_instances.get('CentralIDEWidget').code_editor_widget
 
         self.opened_directories = set()
 
