@@ -115,12 +115,11 @@ class OpenedFilesWidget(QWidget, Ui_OpenedFilesWidget):
             path(str): base path
             tree(QTreeWidgetItem): tree or subtree
         """
-        for element in os.listdir(path):
-            parent_path = path + "/" + element
-            parent_item = TreeItem(tree, [os.path.basename(element)], parent_path)
+        for element in os.scandir(path):
+            parent_item = TreeItem(tree, [os.path.basename(element)], element.path)
 
-            if os.path.isdir(parent_path):
-                self._add_dirs(parent_path, parent_item)
+            if element.is_dir():
+                self._add_dirs(element.path, parent_item)
 
     def open_file_on_double_click(self, item):
         if item.path and not os.path.isdir(item.path):
