@@ -2,7 +2,7 @@ import os
 import typing
 
 from PyQt5.QtCore import Qt, QRect
-from PyQt5.QtGui import QKeyEvent, QPaintEvent, QPainter, QColor, QMouseEvent, QTextCursor
+from PyQt5.QtGui import QKeyEvent, QPaintEvent, QPainter, QColor, QMouseEvent, QTextCursor, QWheelEvent
 from PyQt5.QtWidgets import QPlainTextEdit, QWidget, QHBoxLayout, QVBoxLayout, QTabWidget, QTabBar, QStatusBar
 
 from pride.common.decorators import global_instances
@@ -25,6 +25,29 @@ class CodeEdit(QPlainTextEdit):
             self.textCursor().insertText("    ")
             return
         return QPlainTextEdit.keyPressEvent(self, event)
+
+    def wheelEvent(self, event: QWheelEvent) -> None:
+        """
+        Overridden wheelEvent for zooming.
+        Args:
+            event(QWheelEvent): qt event object with event data
+        """
+        if event.modifiers() & Qt.ControlModifier:
+            self.zoom(event.angleDelta().y())
+        else:
+            QPlainTextEdit.wheelEvent(self, event)
+
+    def zoom(self, delta: int) -> None:
+        """
+        Zoom text in editor
+        Args:
+            delta(int): delta which represent zoomin or zoomout
+
+        """
+        if delta > 0:
+            self.zoomIn(1)
+        elif delta < 0:
+            self.zoomOut(1)
 
 
 class LinesNumberBar(QWidget):
