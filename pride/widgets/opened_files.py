@@ -1,10 +1,8 @@
 import os
 
 from PyQt5.QtWidgets import QWidget, QListWidgetItem, QTreeWidgetItem
-from PyQt5.QtCore import QSize
+from PyQt5.QtCore import QSize, pyqtSignal
 
-from pride.common.decorators import global_instances
-from pride.dialogs.error_dialog import ErrorDialog
 from pride.UI.item_widget_ui import Ui_ItemWidget
 from pride.UI.opened_files_widget_ui import Ui_OpenedFilesWidget
 
@@ -31,13 +29,15 @@ class ItemWidget(QWidget, Ui_ItemWidget):
 
 
 class OpenedFilesWidget(QWidget, Ui_OpenedFilesWidget):
+
+    open_file_on_double_click = pyqtSignal(str)
+
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
         self.setupUi(self)
 
-        self.tree_widget.itemDoubleClicked.connect(self.open_file_on_double_click)
-        self.list_widget.itemDoubleClicked.connect(self.open_file_on_double_click)
-        self.code_editor = global_instances.get('CentralIDEWidget').code_editor_widget
+        self.tree_widget.itemDoubleClicked.connect(self.item_double_clicked)
+        self.list_widget.itemDoubleClicked.connect(self.item_double_clicked)
 
         self.opened_directories = set()
 
@@ -121,14 +121,8 @@ class OpenedFilesWidget(QWidget, Ui_OpenedFilesWidget):
             if element.is_dir():
                 self._add_dirs(element.path, parent_item)
 
-    def open_file_on_double_click(self, item):
+    def item_double_clicked(self, item):
         if item.path and not os.path.isdir(item.path):
-            try:
-                self.code_editor.open_file(item.path)
-            except PermissionError:
-                ErrorDialog("Permission error", "Can't open this file: permission denied", self).show()
-            except FileNotFoundError:
-                ErrorDialog("File not found", "Can't open this file: file not found", self).show()
-            except Exception:
-                ErrorDialog("Unknown error", "Can't open this file: unknown error", self).show()
+            self.open_file_on_double_click.emit(item.path)
+
 

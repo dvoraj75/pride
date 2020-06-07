@@ -1,23 +1,28 @@
+from pride.dialogs.error_dialog import ErrorDialog
 
 
-global_instances = dict()
+def file_exception_handling(f):
+    def wrapper(self, *args, **kwargs):
+        try:
+            f(self, *args, **kwargs)
+        except PermissionError:
+            ErrorDialog("Permission error", "Can't open this file: permission denied", self).show()
+        except FileNotFoundError:
+            ErrorDialog("File not found", "Can't open this file: file not found", self).show()
+        except Exception as e:
+            ErrorDialog("Unknown error", "Can't open this file: unknown error", self).show()
+    return wrapper
 
 
-def global_object(original_class: type) -> type:
-    """
-    Class decorator to add instance of original class to global dict.
+def dir_exception_handling(f):
+    def wrapper(self, *args, **kwargs):
+        try:
+            f(self, *args, **kwargs)
+        except PermissionError:
+            ErrorDialog("Permission error", "Can't open this directory: permission denied", self).show()
+        except FileNotFoundError:
+            ErrorDialog("File not found", "Can't open this directory: directory not found", self).show()
+        except Exception as e:
+            ErrorDialog("Unknown error", "Can't open this directory: unknown error", self).show()
+    return wrapper
 
-    Args:
-        original_class(type): class to decorate
-
-    Returns:
-        type: decorated class
-    """
-
-    def __new__(cls, *args, **kwargs):
-        global_instances[cls.__name__] = original_new(cls, *args, **kwargs)
-        return global_instances[cls.__name__]
-
-    original_new = original_class.__new__
-    original_class.__new__ = __new__
-    return original_class

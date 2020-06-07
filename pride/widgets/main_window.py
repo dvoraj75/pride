@@ -1,9 +1,8 @@
 
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QToolBar, QWidget, QHBoxLayout, QSpacerItem, QSizePolicy, QLabel
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QTextCursor
 
-from pride.common.decorators import global_object
+from pride.common.decorators import file_exception_handling, dir_exception_handling
 from pride.dialogs.error_dialog import ErrorDialog
 from pride.UI.main_window_ui import Ui_MainWindow
 from pride.widgets import CentralIDEWidget
@@ -44,7 +43,6 @@ class StatusBarWidget(QWidget):
         self.line_and_column_label.setText(self.line_and_column_pattern.format(line, column))
 
 
-@global_object
 class MainWindow(QMainWindow, Ui_MainWindow):
     """
     Main window class representing the main window of app.
@@ -67,7 +65,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.statusbar_widget = StatusBarWidget(self.statusbar)
         self.statusbar.addPermanentWidget(self.statusbar_widget, 1)
-
+        self.code_editor.set_new_cursor_position_function = self.statusbar_widget.set_line_and_column
         self.trigger_menu_actions()
 
     def trigger_menu_actions(self) -> None:
@@ -81,25 +79,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionSave_as.triggered.connect(self.save_file_as)
         self.actionExit.triggered.connect(self.exit_application)
 
-    def set_new_cursor_position(self, cursor: QTextCursor) -> None:
-        """
-        Set new cursor position in main status bar
-
-        Args:
-            cursor(QTextCursor): active cursor of code editor in active tab
-        """
-        self.statusbar_widget.set_line_and_column(
-            cursor.block().blockNumber() + 1,
-            cursor.positionInBlock() + 1
-        )
-
     def new_file(self) -> None:
         """
         Create new tab / file
         """
         self.code_editor.new_file()
 
-    def open_file(self) -> None:
+    @file_exception_handling
+    def open_file(self, *_) -> None:
         """
         Open file in new tab.
         """
@@ -107,17 +94,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if not file_path:
             return
-        try:
-            self.code_editor.open_file(file_path)
-        except PermissionError:
-            #  TODO: logovani
-            ErrorDialog("Permission error", "Can't open this file: permission denied", self).show()
-        except FileNotFoundError:
-            ErrorDialog("File not found", "Can't open this file: file not found", self).show()
-        except Exception:
-            ErrorDialog("Unknown error", "Can't open this file: unknown error", self).show()
 
-    def open_dir(self) -> None:
+        self.code_editor.open_file(file_path)
+
+    @dir_exception_handling
+    def open_dir(self, *_) -> None:
         """
         Open directory
         """
@@ -126,15 +107,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not dir_path:
             return
 
-        try:
-            self.central_ide_widget.open_dir(dir_path)
-        except PermissionError:
-            ErrorDialog("Permission error", "Can't open this directory: permission denied", self).show()
-        except FileNotFoundError:
-            ErrorDialog("File not found", "Can't open this directory: directory not found", self).show()
-        except Exception as e:
-            print("3", type(e), e)
-            ErrorDialog("Unknown error", "Can't open this directory: unknown error", self).show()
+        self.central_ide_widget.open_dir(dir_path)
 
     def save_file(self) -> None:
         """

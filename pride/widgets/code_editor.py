@@ -1,11 +1,9 @@
 import os
 import typing
 
-from PyQt5.QtCore import Qt, QRect
+from PyQt5.QtCore import Qt, QRect, pyqtSignal
 from PyQt5.QtGui import QKeyEvent, QPaintEvent, QPainter, QColor, QMouseEvent, QTextCursor, QWheelEvent
 from PyQt5.QtWidgets import QPlainTextEdit, QWidget, QHBoxLayout, QVBoxLayout, QTabWidget, QTabBar, QStatusBar
-
-from pride.common.decorators import global_instances
 
 
 class CodeEdit(QPlainTextEdit):
@@ -129,6 +127,9 @@ class CodeEditorWidget(QWidget):
     """
     Widget which representing code editor with lines number bar.
     """
+
+    change_cursor_position = pyqtSignal(int, int)
+
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
 
@@ -146,13 +147,14 @@ class CodeEditorWidget(QWidget):
         self.file_saved = True
         self.opened_file = None
 
-        self.main_window = global_instances.get("MainWindow")
-
     def cursor_position_changed(self):
         """
         This method is called when cursorPositionChanged signal is emitted.
         """
-        self.main_window.set_new_cursor_position(self.get_cursor())
+        self.change_cursor_position.emit(
+            self.get_cursor().block().blockNumber() + 1,
+            self.get_cursor().positionInBlock() + 1
+        )
 
     def load_file(self, file: typing.TextIO) -> None:
         """
@@ -204,6 +206,11 @@ class CodeEditorTabWidget(QWidget):
     """
     Widget which representing code editor with tabs.
     """
+
+    open_new_file = pyqtSignal(str)
+    change_active_file = pyqtSignal(str)
+    close_file = pyqtSignal(str)
+
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
 
@@ -230,8 +237,7 @@ class CodeEditorTabWidget(QWidget):
         self.opened_tabs = 0
         self.opened_files = set()
 
-        self.main_window = global_instances.get("MainWindow")
-        self.central_ide_widget = global_instances.get("CentralIDEWidget")
+        self.set_new_cursor_position_function = None
 
     def open_file(self, file_path: str) -> None:
         """
@@ -249,16 +255,18 @@ class CodeEditorTabWidget(QWidget):
             code_editor.load_file(f)
             code_editor.file_saved = True
             code_editor.opened_file = f.name
+            code_editor.change_cursor_position.connect(self.set_new_cursor_position_function)
             self.add_tab(code_editor, os.path.basename(f.name))
 
         self.opened_files.add(file_path)
-        self.central_ide_widget.add_file_to_list(file_path)
+        self.open_new_file.emit(file_path)
 
     def new_file(self) -> None:
         """
         Create new tab / file
         """
         code_editor = CodeEditorWidget(self)
+        code_editor.change_cursor_position.connect(self.set_new_cursor_position_function)
         code_editor.file_saved = False
         self.add_tab(code_editor, "NoName")
 
@@ -309,9 +317,9 @@ class CodeEditorTabWidget(QWidget):
             self.editor_status_bar.showMessage(self.get_current_file() or "File not saved")
             self.editor_status_bar.show()
 
-        self.main_window.set_new_cursor_position(current_widget.get_cursor())
+        current_widget.cursor_position_changed()
 
-        self.central_ide_widget.change_current_active_file(current_widget.opened_file)
+        self.change_active_file.emit(current_widget.opened_file)
 
     def set_tab_text(self, text: str, index: int = None) -> None:
         """
@@ -334,7 +342,7 @@ class CodeEditorTabWidget(QWidget):
         file_path = self.tab_widget.widget(index).opened_file
         self.tab_widget.removeTab(index)
         self.opened_tabs -= 1
-        self.central_ide_widget.remove_file_from_list(file_path)
+        self.close_file.emit(file_path)
         try:
             self.opened_files.remove(file_path)
         except KeyError:
